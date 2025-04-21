@@ -4,7 +4,7 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [title, setTitle] = useState("");
   const [filter, setFilter] = useState("all");
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem("theme") === "dark");
   const [editId, setEditId] = useState(null);
   const [editTitle, setEditTitle] = useState("");
 
@@ -66,20 +66,17 @@ function App() {
   };
 
   useEffect(() => {
-    fetchTodos();
-  }, [filter]);
-
+    document.body.className = darkMode ? "dark" : "light";
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
   return (
     <div className={darkMode ? "dark" : ""}>
   <div className="min-h-screen bg-soft dark:bg-darkbg text-gray-800 dark:text-white p-6 transition-colors">
     <div className="max-w-xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-extrabold text-primary">📝 To-Do List</h1>
-        <button
-          className="bg-accent text-white px-4 py-2 rounded-full hover:bg-purple-700 transition"
-          onClick={() => setDarkMode(!darkMode)}
-        >
-          {darkMode ? "☀️ Light" : "🌙 Dark"}
+        <button onClick={() => setDarkMode(!darkMode)} className="px-4 py-2 bg-gray-800 text-white rounded">
+          {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
         </button>
       </div>
 

@@ -1,3 +1,117 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+    font-family: 'Inter', Impact,  'Arial Narrow Bold', sans-serif,;
+    transition: background 0.3s ease, color 0.3s ease;
+    height: 100vh; /* Ensures body covers the full viewport height */
+    margin: 0; /* Removes default margin */
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Centers the content */
+    
+  }
+  
+  body.light {
+    background: linear-gradient( pink,rgb(252, 116, 206));
+    color: #333;
+  
+  }
+  
+  body.dark {
+    background: linear-gradient( rgb(49, 49, 49),rgb(95, 95, 95));
+    color: #ffffff;
+  }
+  
+  /* To-Do Container */
+  .todo-container {
+    max-width: 600px; /* Increase the width */
+    width: 90%; /* Make it responsive */
+    margin: 50px auto;
+    background: white;
+    padding: 50px; /* More padding for a spacious look */
+    border-radius: 20px; /* Softer rounded edges */
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2); /* Better shadow for depth */
+    transition: background 0.3s ease, color 0.3s ease;
+    gap: 15px;
+  }
+  
+  .dark .todo-container {
+    background: #2c2c2c;
+    color: rgb(255, 250, 252);
+  }
+  
+  /* Input & Button Styling */
+  .todo-input {
+    font-family: 'Inter';
+    width: 90%;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+  }
+  
+  .dark .todo-input {
+    font-family: 'Inter';
+    background: #444;
+    border: none;
+    color: white;
+  }
+  
+  .todo-button {
+    font-family: 'Inter';
+    width: 103%;
+    background: #ff81ff;
+    color: white;
+    padding: 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-bottom: 15px;
+  }
+  
+  .todo-button:hover {
+    background: #d300b0;
+  }
+  
+  /* To-Do List Items */
+  .todo-item {
+    font-family: 'Inter';
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 10px; /* Add space between tasks */
+  }
+  
+  .dark .todo-item {
+    
+    border-bottom: 1px solid #555;
+  }
+  
+  .completed {
+    font-family: 'Inter';
+    text-decoration: line-through;
+    color: gray;
+  }
+  
+  /* Filter Buttons */
+  .filter-buttons button {
+    padding: 8px 12px;
+    margin-right: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    gap: 10px;
+  }
+  
+  .filter-buttons button.active {
+    font-family: 'Inter';
+    background: #d300b0;
+    color: white;
+  }
+  
+  
