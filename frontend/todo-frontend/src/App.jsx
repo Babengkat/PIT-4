@@ -8,7 +8,7 @@ function App() {
   const [editId, setEditId] = useState(null);
   const [editTitle, setEditTitle] = useState("");
 
-  const API_URL = "http://localhost:8000/todos";
+  const API_URL = "https://pit-4.onrender.com/todos";
 
   const fetchTodos = async () => {
     try {

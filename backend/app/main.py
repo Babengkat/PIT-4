@@ -11,7 +11,7 @@ app = FastAPI()
 
 # Allow requests from frontend
 origins = [
-    "http://localhost:5174",  # Adjust if you deploy frontend elsewhere
+    "https://pit-4.vercel.app",  # Adjust if you deploy frontend elsewhere
 ]
 
 app.add_middleware(
