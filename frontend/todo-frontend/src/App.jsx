@@ -3,12 +3,18 @@ import { useEffect, useState } from "react";
 function App() {
   const [todos, setTodos] = useState([]);
   const [title, setTitle] = useState("");
-  const [filter, setFilter] = useState("all");
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem("theme") === "dark");
-  const [editId, setEditId] = useState(null);
-  const [editTitle, setEditTitle] = useState("");
+  const [filter, setFilter] = useState("all"); // all, completed, pending
+  const [darkMode, setDarkMode] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [editingTitle, setEditingTitle] = useState("");
 
   const API_URL = "https://pit-4.onrender.com/todos";
+
+  useEffect(() => {
+    document.body.className = darkMode ? "dark" : "light";
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
+
 
   const fetchTodos = async () => {
     try {
@@ -35,6 +41,17 @@ function App() {
     fetchTodos();
   };
 
+  const updateTodo = async (id) => {
+    await fetch(`${API_URL}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: editingTitle, completed: todos.find(t => t.id === id).completed }),
+    });
+    setEditingId(null);
+    setEditingTitle("");
+    fetchTodos();
+  };
+
   const toggleComplete = async (id, currentStatus) => {
     await fetch(`${API_URL}/${id}`, {
       method: "PUT",
@@ -49,88 +66,87 @@ function App() {
     fetchTodos();
   };
 
-  const editTodo = (id, currentTitle) => {
-    setEditId(id);
-    setEditTitle(currentTitle);
-  };
-
-  const saveEdit = async () => {
-    await fetch(`${API_URL}/${editId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: editTitle, completed: todos.find(t => t.id === editId).completed }),
-    });
-    setEditId(null);
-    setEditTitle("");
-    fetchTodos();
-  };
-
   useEffect(() => {
-    document.body.className = darkMode ? "dark" : "light";
-    localStorage.setItem("theme", darkMode ? "dark" : "light");
-  }, [darkMode]);
+    fetchTodos();
+  }, [filter]);
+
   return (
     <div className={darkMode ? "dark" : ""}>
-  <div className="min-h-screen bg-soft dark:bg-darkbg text-gray-800 dark:text-white p-6 transition-colors">
-    <div className="max-w-xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-extrabold text-primary">📝 To-Do List</h1>
-        <button onClick={() => setDarkMode(!darkMode)} className="px-4 py-2 bg-gray-800 text-white rounded">
-          {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-        </button>
-      </div>
+      <div className="min-h-screen p-4 bg-white dark:bg-gray-900 text-black dark:text-white transition-colors">
+        <div className="max-w-xl mx-auto">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">📝 To-Do List</h1>
+            <button
+              className="bg-gray-300 dark:bg-gray-700 px-3 py-1 rounded"
+              onClick={() => setDarkMode(!darkMode)}
+            >
+              {darkMode ? "☀️ Light" : "🌙 Dark"}
+            </button>
+          </div>
 
-      <div className="flex gap-2 mb-4">
-        <input
-          className="flex-1 px-4 py-2 rounded-lg border-2 border-primary dark:bg-gray-700"
-          placeholder="Add new task..."
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <button
-          className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-indigo-600"
-          onClick={addTodo}
-        >
-          Add
-        </button>
-      </div>
+          <div className="flex mb-4">
+            <input
+              className="flex-1 px-3 py-2 border dark:border-gray-700 rounded-l"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Add new task..."
+            />
+            <button className="bg-blue-500 text-white px-4 rounded-r" onClick={addTodo}>
+              Add
+            </button>
+          </div>
 
-      <div className="flex justify-center gap-2 mb-4">
-        <button onClick={() => setFilter("all")} className="bg-soft dark:bg-gray-700 px-4 py-2 rounded-full hover:bg-primary hover:text-white">All</button>
-        <button onClick={() => setFilter("completed")} className="bg-success text-white px-4 py-2 rounded-full hover:bg-emerald-600">Completed</button>
-        <button onClick={() => setFilter("pending")} className="bg-warning text-white px-4 py-2 rounded-full hover:bg-yellow-500">Pending</button>
-      </div>
+          <div className="flex justify-center gap-2 mb-4">
+            <button onClick={() => setFilter("all")} className="px-2 py-1 border rounded">All</button>
+            <button onClick={() => setFilter("completed")} className="px-2 py-1 border rounded">Completed</button>
+            <button onClick={() => setFilter("pending")} className="px-2 py-1 border rounded">Pending</button>
+          </div>
 
-          <ul className="space-y-4">
+          <ul>
             {todos.map((todo) => (
-              <li key={todo.id} className="flex items-center justify-between bg-gray-100 dark:bg-gray-700 p-4 rounded-xl shadow-sm">
-                <div className="flex items-center gap-3">
+              <li key={todo.id} className="flex justify-between items-center border-b py-2">
+                <div className="flex items-center w-full">
                   <input
                     type="checkbox"
                     checked={todo.completed}
                     onChange={() => toggleComplete(todo.id, todo.completed)}
-                    className="w-5 h-5"
+                    className="mr-2"
                   />
-                  {editId === todo.id ? (
+                  {editingId === todo.id ? (
                     <input
-                      value={editTitle}
-                      onChange={(e) => setEditTitle(e.target.value)}
-                      className="bg-white dark:bg-gray-600 rounded px-3 py-1 w-full"
+                      className="flex-1 px-2 py-1 border rounded mr-2"
+                      value={editingTitle}
+                      onChange={(e) => setEditingTitle(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && updateTodo(todo.id)}
                     />
                   ) : (
-                    <span className={`${todo.completed ? "line-through text-gray-500 dark:text-gray-400" : ""} text-lg`}>
+                    <span className={`flex-1 ${todo.completed ? "line-through" : ""}`}>
                       {todo.title}
                     </span>
                   )}
                 </div>
-                <div className="flex gap-2">
-                  {editId === todo.id ? (
-                    <button onClick={saveEdit} className="text-blue-500 hover:underline">Save</button>
-                  ) : (
-                    <button onClick={() => editTodo(todo.id, todo.title)} className="text-indigo-500 hover:underline">Edit</button>
-                  )}
-                  <button onClick={() => deleteTodo(todo.id)} className="text-red-500 hover:underline">Delete</button>
-                </div>
+                {editingId === todo.id ? (
+                  <button
+                    className="bg-green-500 text-white px-2 py-1 rounded mr-2"
+                    onClick={() => updateTodo(todo.id)}
+                  >
+                    Save
+                  </button>
+                ) : (
+                  <button
+                    className="text-blue-500 mr-2"
+                    onClick={() => {
+                      setEditingId(todo.id);
+                      setEditingTitle(todo.title);
+                    }}
+                  >
+                    Edit
+                  </button>
+                )}
+                <button onClick={() => deleteTodo(todo.id)} className="text-red-500">
+                  Delete
+                </button>
               </li>
             ))}
           </ul>
